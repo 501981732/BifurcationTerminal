@@ -95,6 +95,7 @@
       navigationBarTitleText: 'Call Me'
     }
     components = {
+        //  不能使用驼峰
       panel: Panel,
       counter1: Counter,
       counter2: Counter,
@@ -199,6 +200,7 @@
           wepy.request({
             url: 'https://www.madcoder.cn/tests/sleep.php?time=1&t=css&c=' + map[i] + '&i=' + i,
             success: function (d) {
+                // 在异步函数中更新数据的时候，必须手动调用$apply方法，才会触发脏数据检查流程的运行。
               self.netrst += d.data + '.'
               self.$apply()
             }
@@ -207,19 +209,20 @@
       },
       counterEmit (...args) {
         let $event = args[args.length - 1]
-        console.log(`${this.$name} receive ${$event.name} from ${$event.source.$name}`)
+        console.log(`${this.$name} receive ${$event.name} from ${$event.source.$name}   methods`)
       }
     }
 
     events = {
       'index-emit': (...args) => {
         let $event = args[args.length - 1]
-        console.log(`${this.$name} receive ${$event.name} from ${$event.source.$name}`)
+        console.log(`${this.$name} receive ${$event.name} from ${$event.source.$name}   events`)
       }
     }
 
     onLoad() {
       let self = this
+      // this.$parent来访问App实例
       this.$parent.getUserInfo(function (userInfo) {
         if (userInfo) {
           self.userInfo = userInfo

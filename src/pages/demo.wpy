@@ -1,0 +1,157 @@
+<style lang="less">
+    .container {
+        background: #F8F8F8;
+        color: #999999;
+          .userinfo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .userinfo-avatar {
+            overflow:hidden;  
+            display: block;  
+            width: 100rpx;  
+            height: 100rpx;  
+            margin: 20rpx;  
+            margin-top: 50rpx;  
+            border-radius: 50%;  
+            border: 2px solid #fff;  
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+            box-sizing: border-box;
+        }
+        .phone {
+            background: #fff;
+            line-height: 30px;
+            height: 30px;
+        }
+        .userinfo-nickname {
+            color: #aaa;
+        }
+        .btn-align{
+            text-align: center;
+            margin-top: 20rpx;
+        }
+    }
+</style>
+<template>
+  <view class="container">
+    <view class="userinfo" @tap="handleViewTap">
+<!--       <image class="userinfo-avatar" src="{{ userInfo.avatarUrl }}" background-size="cover"/>
+      <view class="userinfo-nickname">{{ userInfo.nickName }}</view> -->
+      <view class="userinfo-avatar"><open-data type="userAvatarUrl" ></open-data></view>
+      <view class="userinfo-nickname"><open-data type="userNickName"></open-data></view>
+    </view>
+    <panel>
+        <view class="title" slot="title">选择时间</view>
+        <timepicker @timepicker.user = 'receivetime' @datepicker.user = 'receivedate'></timepicker>
+    </panel>
+    <panel>
+        <view class="title" slot="title">请输入您的手机号</view>
+        <input  @input="bindKeyInput" placeholder="请输入您的手机号" class="phone"  type="number"/>
+    </panel>
+    <view class='btn-align'><button size='mini' open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber" type="primary">点击获取本机号码</button></view>
+    <button type="primary"  @tap="submit"> 提交 </button>
+  </view>
+  <toast/>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Panel from '@/components/panel' // alias example
+  import Toast from 'wepy-com-toast'
+  import testMixin from '../mixins/test'
+  import timePicker from '@/components/timepicker'
+
+  export default class Demo extends wepy.page {
+    config = {
+      navigationBarTitleText: 'Call Me'
+    }
+
+    components = {
+        //  不能使用驼峰
+      panel: Panel,
+      toast: Toast,
+      timepicker: timePicker
+    }
+
+    mixins = [testMixin]
+
+    data = {
+      userInfo: {
+        nickName: '加载中'
+      },
+      phone: null,
+      date: '', //选择日期
+      time: '' // 选择时间
+    }
+
+    computed = {
+
+    }
+    //事件处理函数(集中保存在methods对象中)
+    //只能定义页面绑定的时间 若在某个事件里面再调用别的事件，只能定义在外面
+    methods = {
+      bindKeyInput(e) {
+        this.phone = e.detail.value
+      },
+      submit() {
+        console.log(111)
+        // 广播子组件事件
+        this.$broadcast('index-showlog',{a:1},2,33)
+        this.toast()
+      },
+        getPhoneNumber(e) {
+            console.log(e.detail.encryptedData)
+        },
+      // 监听子组件时间 ，@datepicker.user 
+        receivetime(e) {
+            console.log(e)
+            this.time = e
+            console.log('in methods')
+        },
+        receivedate(e) {
+            this.data = e
+            console.log(e)
+            console.log('in methods')
+        },
+    }
+    // 自定义方法，可以被methods调用
+    toast () {
+        let promise = this.$invoke('toast', 'show', {
+          title: '自定义标题',
+          img: 'https://raw.githubusercontent.com/kiinlam/wetoast/master/images/star.png'
+        })
+        promise.then((d) => {
+          console.log('toast done')
+        })
+    }
+    events = {
+        //events WePY组件事件处理函数对象，存放响应组件之间通过$broadcast、$emit、$invoke所传递的事件的函数
+        // 父组件监听子组件事件有两种方式
+        // 1. 
+        //组件A compA this.emit('compa-show',1)
+        // 父组件 page <compa @copma-show.user='show'/>  
+        // methods = {show(){}}
+        //2 如果用了自定义事件，则events中对应的监听函数不会再执行。
+        // 组件A compA this.emit('compa-show',1)
+        // 父组件不再明确指定监听到的事件之后的自定义事件 <compa/> 
+        // events ={'compa-show'() {}}
+        timepicker(e) {
+            console.log('in events')
+        },
+        datepicker() {
+            console.log('in events')
+        }
+    }
+    onLoad() {
+      let self = this
+      // this.$parent来访问App实例
+      this.$parent.getUserInfo(function (userInfo) {
+        if (userInfo) {
+          self.userInfo = userInfo
+        }
+        self.$apply()
+      })
+    }
+  }
+</script>

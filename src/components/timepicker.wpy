@@ -1,0 +1,69 @@
+<template>
+    <view class="timePicker">
+        <view class="section">
+            <view class="section__title">日期: </view>
+            <picker mode="date" value="{{date}}" start="2018-06-01" end="2100-01-01" @change="bindDateChange">
+                <view class="picker">
+                    {{date}}
+                </view>
+          </picker>
+        </view>
+        <view class="section">
+            <view class="section__title">时间: </view>
+            <picker mode="time" value="{{time}}" start="" end="" bindchange="bindTimeChange">
+                <view class="picker">
+                    {{time}}
+                </view>
+          </picker>
+        </view>
+    </view>
+</template>
+<script>
+  import wepy from 'wepy'
+
+  export default class timePicker extends wepy.component {
+    props = {
+
+    }
+
+    data = {
+        date: '年-月-日',
+        time: '时:分',
+    }
+    events = {
+        // 接受广播事件
+        'index-showlog': (...e) =>{
+            console.log('index-showlog')
+            console.log(e)
+        }
+    }
+
+    watch = {
+    }
+
+    methods = {
+        bindDateChange(e) {
+            this.date = e.detail.value
+            this.$emit('datepicker',e.detail.value)
+        },
+        bindTimeChange(e) {
+            this.time = e.detail.value
+            this.$emit('timepicker',e.detail.value)
+        }
+    }
+  }
+</script>
+<style lang="less">
+    .timePicker {
+        .section {
+            display: flex;
+            height: 30px;
+            line-height: 30px;
+            background: #fff;
+            border: 1px solid #F8F8F8;
+            .section__title {
+                margin-right: 10px;
+            }
+        }
+    }
+</style>
