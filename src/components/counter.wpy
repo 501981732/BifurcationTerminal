@@ -31,7 +31,8 @@
         coerce: function (v) {
           return +v
         },
-        default: 50
+        default: 50,
+        // twoWay: true  // 像父组件传递状态
       }
     }
 

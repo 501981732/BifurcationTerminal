@@ -43,7 +43,7 @@
     </view>
     <panel>
         <view class="title" slot="title">选择时间</view>
-        <timepicker @timepicker.user = 'receivetime' @datepicker.user = 'receivedate'></timepicker>
+        <timepicker @datepicker.user = 'receivedate' ></timepicker>
     </panel>
     <panel>
         <view class="title" slot="title">请输入您的手机号</view>
@@ -103,15 +103,11 @@
         getPhoneNumber(e) {
             console.log(e.detail.encryptedData)
         },
-      // 监听子组件时间 ，@datepicker.user 
-        receivetime(e) {
-            console.log(e)
-            this.time = e
-            console.log('in methods')
-        },
+      // 监听子组件时间 ，@receivedate.user 
         receivedate(e) {
-            this.data = e
-            console.log(e)
+            const {date,time} = e
+            this.date = date
+            this.time = time
             console.log('in methods')
         },
     }
@@ -126,19 +122,18 @@
         })
     }
     events = {
+
         //events WePY组件事件处理函数对象，存放响应组件之间通过$broadcast、$emit、$invoke所传递的事件的函数
         // 父组件监听子组件事件有两种方式
         // 1. 
         //组件A compA this.emit('compa-show',1)
         // 父组件 page <compa @copma-show.user='show'/>  
         // methods = {show(){}}
+        // 此时回覆盖掉events里面的compa-show
         //2 如果用了自定义事件，则events中对应的监听函数不会再执行。
         // 组件A compA this.emit('compa-show',1)
         // 父组件不再明确指定监听到的事件之后的自定义事件 <compa/> 
         // events ={'compa-show'() {}}
-        timepicker(e) {
-            console.log('in events')
-        },
         datepicker() {
             console.log('in events')
         }

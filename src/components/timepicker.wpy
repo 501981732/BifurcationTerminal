@@ -44,12 +44,15 @@
     methods = {
         bindDateChange(e) {
             this.date = e.detail.value
-            this.$emit('datepicker',e.detail.value)
+            this.emitDate()
         },
         bindTimeChange(e) {
             this.time = e.detail.value
-            this.$emit('timepicker',e.detail.value)
+            this.emitDate()
         }
+    }
+    emitDate() {
+        this.$emit('datepicker',{time: this.time,date: this.date})
     }
   }
 </script>

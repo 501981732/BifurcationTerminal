@@ -57,19 +57,23 @@
       <text class="testcounter">计数组件2: </text>
 
       <view class="counterview">
+        <!-- sync 父组件修改num会动态修改子组件 -->
+        <!-- props 中twoWay则会让子组件变化影响到父组件 -->
         <counter2 :num.sync="mynum"></counter2>
       </view>
     </panel>
 
     <panel>
       <view class="title" slot="title">测试组件Repeat</view>
-      <repeat for="" index="index" item="item" key="key">
+      <!-- 暂时并未发现官方反馈的repeat存在的问题 -->
+      <repeat for="{{groupList}}" index="index" item="item" key="key">
         <group :grouplist="item" :indexa="index"></group>
       </repeat>
     </panel>
 
     <panel>
       <view class="title" slot="title">测试列表</view>
+        <!-- 支持微信小程序原生的遍历 -->
       <list></list>
     </panel>
 
