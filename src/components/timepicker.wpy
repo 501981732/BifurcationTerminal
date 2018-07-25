@@ -60,12 +60,17 @@
     .timePicker {
         .section {
             display: flex;
-            height: 30px;
-            line-height: 30px;
+            font-size: 14px;
+            height: 40px;
+            line-height: 40px;
             background: #fff;
             border: 1px solid #F8F8F8;
+            padding-left: 10rpx;
             .section__title {
                 margin-right: 10px;
+            }
+            picker{
+            flex: 1;
             }
         }
     }

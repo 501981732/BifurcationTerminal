@@ -1,7 +1,8 @@
 <style lang="less">
-    .container {
+    .index {
         background: #F8F8F8;
-        color: #999999;
+        color: #666;
+        font-size: 16px;
           .userinfo {
             display: flex;
             flex-direction: column;
@@ -21,8 +22,10 @@
         }
         .phone {
             background: #fff;
-            line-height: 30px;
-            height: 30px;
+            line-height: 40px;
+            height: 40px;
+            font-size: 14px;
+            padding-left: 10rpx;
         }
         .userinfo-nickname {
             color: #aaa;
@@ -30,11 +33,13 @@
         .btn-align{
             text-align: center;
             margin-top: 20rpx;
+            margin-bottom: 20rpx;
         }
+
     }
 </style>
 <template>
-  <view class="container">
+  <view class="container index">
     <view class="userinfo" @tap="handleViewTap">
 <!--       <image class="userinfo-avatar" src="{{ userInfo.avatarUrl }}" background-size="cover"/>
       <view class="userinfo-nickname">{{ userInfo.nickName }}</view> -->
@@ -47,9 +52,9 @@
     </panel>
     <panel>
         <view class="title" slot="title">请输入您的手机号</view>
-        <input  @input="bindKeyInput" placeholder="请输入您的手机号" class="phone"  type="number"/>
+        <input  @input="bindKeyInput" placeholder="请输入您的手机号" class="phone"  type="text"/>
     </panel>
-    <view class='btn-align'><button size='mini' open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber" type="primary">点击获取本机号码</button></view>
+    <view class='btn-align'><button  open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber" type="primary">点击获取本机号码</button></view>
     <button type="primary"  @tap="submit"> 提交 </button>
   </view>
   <toast/>
@@ -61,7 +66,9 @@
   import Toast from 'wepy-com-toast'
   import testMixin from '../mixins/test'
   import timePicker from '@/components/timepicker'
-
+  import {isTelephone} from '@/utils/utils'
+  import {request} from '@/utils/request'
+  
   export default class Demo extends wepy.page {
     config = {
       navigationBarTitleText: 'Call Me'
@@ -89,16 +96,16 @@
 
     }
     //事件处理函数(集中保存在methods对象中)
-    //只能定义页面绑定的时间 若在某个事件里面再调用别的事件，只能定义在外面
+    //只能定义页面绑定的时间 若在某个事件里面再调用别的方法，则该方法只能定义在外面
     methods = {
       bindKeyInput(e) {
         this.phone = e.detail.value
       },
       submit() {
-        console.log(111)
+        // isTelephone(this.phone) ? this.toast('成功') : this.toast('号码错误')
+        isTelephone(this.phone) || this.toast('号码错误')
         // 广播子组件事件
         this.$broadcast('index-showlog',{a:1},2,33)
-        this.toast()
       },
         getPhoneNumber(e) {
             console.log(e.detail.encryptedData)
@@ -112,9 +119,9 @@
         },
     }
     // 自定义方法，可以被methods调用
-    toast () {
+    toast (title) {
         let promise = this.$invoke('toast', 'show', {
-          title: '自定义标题',
+          title: title,
           img: 'https://raw.githubusercontent.com/kiinlam/wetoast/master/images/star.png'
         })
         promise.then((d) => {
@@ -147,6 +154,8 @@
         }
         self.$apply()
       })
+
+      console.log(request)
     }
   }
 </script>
