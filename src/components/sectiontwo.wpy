@@ -1,0 +1,72 @@
+<style lang="less">
+
+</style>
+<template>
+    <view class="section-two">
+        hello
+        <canvas canvas-id="firstCanvas" style="width: 300px; height: 200px;"></canvas>
+    </view>
+</template>
+<script>
+  import wepy from 'wepy'
+
+  export default class Counter extends wepy.component {
+    props = {
+
+    }
+    data = {
+    }
+    events = {
+
+    }
+        onReady() {
+            // 使用 wx.createContext 获取绘图上下文 context
+            var context = wx.createCanvasContext('firstCanvas')
+            
+            context.setStrokeStyle("#00ff00")
+            context.setLineWidth(5)
+            context.rect(0, 0, 200, 200)
+            context.stroke()
+            context.setStrokeStyle("#ff0000")
+            context.setLineWidth(2)
+            context.moveTo(160, 100)
+            context.arc(100, 100, 60, 0, 2 * Math.PI, true)
+            context.moveTo(140, 100)
+            context.arc(100, 100, 40, 0, Math.PI, false)
+            context.moveTo(85, 80)
+            context.arc(80, 80, 5, 0, 2 * Math.PI, true)
+            context.moveTo(125, 80)
+            context.arc(120, 80, 5, 0, 2 * Math.PI, true)
+            context.stroke()
+            context.draw()
+        }
+    watch = {
+      num (curVal, oldVal) {
+        console.log(`旧值：${oldVal}，新值：${curVal}`)
+      }
+    }
+    createCircle() {
+            var startAngle = 0;//扇形的开始弧度
+            var endAngle = 0;//扇形的终止弧度
+            //画一个8等份扇形组成的圆形
+            for (var i = 0; i< 8; i++){
+                startAngle = Math.PI*(i/4-1/8);
+                endAngle = startAngle+Math.PI*(1/4);
+                ctx.save();
+                ctx.beginPath(); 
+                ctx.arc(150,150,100, startAngle, endAngle, false);
+                ctx.lineWidth = 120;
+                if (i%2 == 0) {
+                    ctx.strokeStyle =  color[0];
+                }else{
+                    ctx.strokeStyle =  color[1];
+                }
+                ctx.stroke();
+                ctx.restore();
+            } 
+    }
+    methods = {
+
+    }
+  }
+</script>

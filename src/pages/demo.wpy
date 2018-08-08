@@ -40,7 +40,7 @@
 </style>
 <template>
   <view class="container index">
-    <view class="userinfo" @tap="handleViewTap">
+    <view class="userinfo" >
 <!--       <image class="userinfo-avatar" src="{{ userInfo.avatarUrl }}" background-size="cover"/>
       <view class="userinfo-nickname">{{ userInfo.nickName }}</view> -->
       <view class="userinfo-avatar"><open-data type="userAvatarUrl" ></open-data></view>

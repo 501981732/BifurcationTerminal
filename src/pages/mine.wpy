@@ -1,0 +1,42 @@
+<template>
+    <view class='page'>
+        <chooselist :list='mylist' type='mine'></chooselist>
+    </view>
+</template>
+<script>
+    import wepy from 'wepy';
+    import ChooseList from '@/components/ChooseList'
+
+    export default class Mine extends wepy.page {
+
+        data = {
+            mylist: [{
+                title:'中午吃点啥',
+                list: ['鱼香肉丝','宫保鸡丁'],
+                pick: '鱼香肉丝',
+                username:'',
+                useravator:''
+            },{
+                title:'中午吃点啥',
+                list: ['鱼香肉丝','宫保鸡丁'],
+                pick: '鱼香肉丝',
+                username:'',
+                useravator:''
+            }]
+        };
+        components = {
+            chooselist: ChooseList
+        }
+        onLoad () {
+
+        }
+    }  
+</script>
+<style  lang="less">
+    .page{
+        background-color: #fff;
+    }
+    .mine-page {
+        margin-top: 20px;
+    }
+</style>

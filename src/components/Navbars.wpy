@@ -1,0 +1,48 @@
+<template>
+    <view class="weui-navbar">
+        <view wx:for="{{list}}" wx:key="*this" id="{{index}}" class="weui-navbar__item {{activeIndex == index ? 'weui-bar__item_on' : ''}}" @tap="tabClick">
+            <view class="weui-navbar__title">{{item}}</view>
+        </view>
+        <view class="weui-navbar__slider" style="left: {{sliderLeft}}px; transform: translateX({{sliderOffset}}px); -webkit-transform: translateX({{sliderOffset}}px);"></view>
+    </view>
+</template>
+
+<script>
+
+    import wepy from 'wepy'
+    export default class Navbars extends wepy.component {
+        async onLoad() {
+            const sliderWidth = 96; // 需要设置slider的宽度，用于计算中间位置
+            let res = await wepy.getSystemInfo();
+            this.sliderLeft = (res.windowWidth / this.list.length - sliderWidth) / 2;
+            this.sliderOffset = res.windowWidth / this.list.length * this.activeIndex;
+            this.$apply()
+        }
+        props = {
+            list : {
+                type : Array,
+                default: []
+            }
+        }
+
+        data = {
+            activeIndex: 1,
+            sliderOffset: 0,
+            sliderLeft: 0
+        }
+
+        methods = {
+            tabClick (e) {
+                this.sliderOffset = e.currentTarget.offsetLeft;
+                this.activeIndex = e.currentTarget.id;
+                this.$emit('activeIndex',this.activeIndex)
+            }
+        }
+    }
+</script>
+
+<style lang="less">
+    .a {
+        height: 100%;
+    }
+</style>

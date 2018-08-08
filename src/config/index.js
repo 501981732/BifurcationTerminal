@@ -16,6 +16,6 @@ export default {
     webSocketProtocol: 'wss://',
     // host: 'localhost:8080',
     HOST: 'group.mrourou.com',
-    uploadHost: 'res.mrourou.com',
+    UPLOADHOST: 'res.mrourou.com',
     imgURL:''
 }
