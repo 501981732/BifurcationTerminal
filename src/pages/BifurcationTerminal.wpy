@@ -125,8 +125,8 @@
                 username:'',
                 useravator:''
             },{
-                title:'中午吃点啥',
-                list: ['鱼香肉丝','宫保鸡丁'],
+                title:'中午吃点啥2',
+                list: ['鱼香肉丝2','宫保鸡丁2'],
                 pick: '鱼香肉丝',
                 username:'',
                 useravator:''
@@ -211,24 +211,6 @@
                         // })
                     // }
                 }, 4100);
-                /*wx.request({
-                  url: '',
-                  data: {},
-                  header: {
-                      'Content-Type': 'application/json'
-                  },
-                  success: function(data) {
-                    console.log(data)
-                  },
-                  fail: function(error) {
-                    console.log(error)
-                    wx.showModal({
-                      title: '抱歉',
-                      content: '网络异常，请重试',
-                      showCancel: false
-                    })
-                  }
-                })*/
             },
         }
         computed() {

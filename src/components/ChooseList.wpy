@@ -12,8 +12,7 @@
             </view>
             <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
                 <view class="weui-media-box__title">{{item.title}}</view>
-                <view class="weui-media-box__desc">选项1：宫保鸡丁</view>
-                <view class="weui-media-box__desc">选项2：陈皮鸡柳</view>
+                <view class="weui-media-box__desc" wx:for="{{item.list}}"   wx:for-item="_item" wx:key="index">{{index+1}}. {{_item}}</view>
                 <view class="weui-media-box__desc" style='color: #666;margin-top: 5px;'>最终选择：{{item.pick}}</view>
             </view>
         </navigator>
