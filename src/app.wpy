@@ -47,7 +47,6 @@ export default class extends wepy.app {
     pages: [
       'pages/index',
       'pages/demo',
-      'pages/others',
       'pages/mine',
       'pages/BifurcationTerminal'
     ],
@@ -137,7 +136,7 @@ export default class extends wepy.app {
         } else {
           // 保存token到全局globalData
           that.globalData.token = token
-          
+
             //由于这里是网络请求，可能会在 Page.onLoad 之后才返回
             // 所以此处加入 callback 以防止这种情况
             if (that.loginCallback){
@@ -181,7 +180,7 @@ export default class extends wepy.app {
       }
     });
   }
-  
+
   async testAsync () {
     const data = await this.sleep(3)
     console.log(data)
