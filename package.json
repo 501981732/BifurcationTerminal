@@ -1,7 +1,7 @@
 {
-  "name": "callme",
+  "name": "BifurcationTerminal",
   "version": "0.0.2",
-  "description": "A WePY project",
+  "description": "分歧终端机 一款解决生活分歧的小程序",
   "main": "dist/app.js",
   "scripts": {
     "dev": "wepy build --watch",
