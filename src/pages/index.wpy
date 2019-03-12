@@ -1,246 +1,473 @@
-<style lang="less">
-  .userinfo {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .userinfo-avatar {
-    width: 80rpx;
-    height: 80rpx;
-    border-radius: 50%;
-  }
-
-  .userinfo-nickname {
-    color: #aaa;
-  }
-</style>
 <template>
-  <view class="container">
-    <view class="userinfo" @tap="handleViewTap">
-      <image class="userinfo-avatar" src="{{ userInfo.avatarUrl }}" background-size="cover"/>
-      <view class="userinfo-nickname">{{ userInfo.nickName }}</view>
+    <view class='page'>
+        <view class="weui-tab">
+            <navbars :list='tabs' @activeIndex.user='activeI'/>
+            <view class="weui-tab__panel" style='background-color: #fff'>
+                <view class="weui-tab__content" hidden="{{activeIndex != 0}}">
+                    <view class="page__hd">
+                        <view class="page__title">分歧终端机</view>
+                        <view class="page__desc">中午不知道吃啥？衣服不知道选那件？选择恐惧症你可能需要这个小程序</view>
+                    </view>
+                </view>
+                <view class="weui-tab__content" hidden="{{activeIndex != 1}}">
+                    <!-- session 2 -->
+                    <view class="weui-cells weui-cells_after-title" style="margin: 30px">
+                        <view class="weui-cell weui-cell_input weui-cell_vcode">
+                            <view class="weui-cell__hd">
+                                <view class="weui-label">题目：</view>
+                            </view>
+                            <view class="weui-cell__bd">
+                                <input class="weui-input" placeholder="起个名字吧"   @input = 'handleTitleInput'/>
+                            </view>
+                        </view>
+                    </view>
+                    <picker @change="bindPickerChange"  range="{{Selectarray}}" class='select-cont' style="margin-top: 20px">
+                         <button type="primary" >你要纠结几个选项</button>
+                    </picker>
+                    <!-- inputlist -->
+                    <repeat for="{{awardsConfig.awards}}" index="index" item="item"  wx-if='{{awardsConfig.awards.length}}'>
+                        <view class="weui-cells weui-cells_after-title">
+                            <view class="weui-cell weui-cell_input weui-cell_vcode">
+                                <view class="weui-cell__hd">
+                                    <view class="weui-label">选项 {{index+1}}</view>
+                                </view>
+                                <view class="weui-cell__bd">
+                                    <input class="weui-input" placeholder="请输入选项"  data-index='{{index}}' @blur = 'handleInput({{index}})'/>
+                                </view>
+                                <view class="weui-cell__ft" wx-if='{{awardsConfig.awards.length ==index+1}}'>
+                                    <view class="weui-vcode-btn" @tap='deleteLine({{index}})'>删除</view>
+                                </view>
+                            </view>
+                        </view>
+                    </repeat>
+                    <view class="canvas-container">
+                        <view  animation="{{animationData}}" class="canvas-content" >
+                            <canvas style="width: 300px; height: 300px;" class="canvas-element" canvas-id="lotteryCanvas"></canvas>
+                            <view class="canvas-list" wx:for="{{awardsList}}" wx:key="unique">
+                                <view class="canvas-item">
+                                    <text class="canvas-item-text" style="-webkit-transform: rotate({{item.turn}});transform: rotate({{item.turn}})">{{item.award}}</text>
+                                </view>
+                            </view>
+                        </view>
+                        <view @tap="getLottery" class="canvas-btn {{btnDisabled}}">选择</view>
+                    </view>
+                </view>
+                <view class="weui-tab__content" hidden="{{activeIndex != 2}}">
+                    <view>
+                        <chooselist :list='otherList'></chooselist>
+                    </view>
+                </view>
+            </view>
+        </view>
     </view>
-
-    <panel>
-      <view class="title" slot="title">测试数据绑定</view>
-
-      <text class="info">{{normalTitle}}</text>
-      <text class="info">{{setTimeoutTitle}}</text>
-      <text class="info">{{mixin}}</text>
-      <text class="info">{{mynum}}</text>
-      <text class="info">{{now}}</text>
-      <button @tap="plus('a')" size="mini">  +  </button>
-    </panel>
-
-    <panel>
-      <view class="title" slot="title">其它测试</view>
-      <button @tap="toast" size="mini">第三方组件</button>
-      <button @tap="communicate" size="mini">组件通信</button>
-      <button @tap="tap" size="mini">混合TAP事件</button>
-    </panel>
-
-    <panel>
-      <view class="title" slot="title">测试并发网络请求</view>
-      <view>返回结果: <text>{{netrst}}</text></view>
-      <button @tap="request" size="mini"> 点我发起10个请求 </button>
-    </panel>
-
-    <panel>
-      <view class="title" slot="title">测试组件</view>
-
-      <text class="testcounter">计数组件1: </text>
-      <view class="counterview">
-        <counter1 @index-emit.user="counterEmit" />
-      </view>
-
-      <text class="testcounter">计数组件2: </text>
-
-      <view class="counterview">
-        <!-- sync 父组件修改num会动态修改子组件 -->
-        <!-- props 中twoWay则会让子组件变化影响到父组件 -->
-        <counter2 :num.sync="mynum"></counter2>
-      </view>
-    </panel>
-
-    <panel>
-      <view class="title" slot="title">测试组件Repeat</view>
-      <!-- 暂时并未发现官方反馈的repeat存在的问题 -->
-      <repeat for="{{groupList}}" index="index" item="item" key="key">
-        <group :grouplist="item" :indexa="index"></group>
-      </repeat>
-    </panel>
-
-    <panel>
-      <view class="title" slot="title">测试列表</view>
-        <!-- 支持微信小程序原生的遍历 -->
-      <list></list>
-    </panel>
-
-    <toast />
-  </view>
 </template>
 
 <script>
-  import wepy from 'wepy'
-  import Panel from '@/components/panel' // alias example
-  import Counter from 'counter' // alias example
-  import List from '../components/list' // aliasFields example
-  import moduleA from 'module-a' // aliasFields ignore module example
-  import Group from '../components/group'
-  import Toast from 'wepy-com-toast'
-  import testMixin from '../mixins/test'
+    import wepy from 'wepy'
+    import Navbars from '@/components/Navbars'
+    import ChooseList from '@/components/ChooseList'
+    import Sectiontwo from '@/components/sectiontwo'
+    import {request} from '@/utils/request'
+    export default class BifurcationTerminal extends wepy.page {
 
-  console.log('moduleA ignored: ', moduleA) // => moduleA ignored: {}
+        onLoad() {
+          let self = this
+          let app = this.$parent
+          // this.$parent来访问App实例
+          // this.$parent.getUserInfo(function (userInfo) {
+          //   if (userInfo) {
+          //     self.userInfo = userInfo
+          //   }
+          //   console.log(self.userInfo)
+          //   self.$apply()
+          // })
 
-
-  export default class Index extends wepy.page {
-    config = {
-      navigationBarTitleText: 'Call Me'
-    }
-    components = {
-        //  不能使用驼峰
-      panel: Panel,
-      counter1: Counter,
-      counter2: Counter,
-      list: List,
-      group: Group,
-      toast: Toast
-    }
-
-    mixins = [testMixin]
-
-    data = {
-      mynum: 20,
-      userInfo: {
-        nickName: '加载中...'
-      },
-      normalTitle: '原始标题',
-      setTimeoutTitle: '标题三秒后会被修改',
-      count: 0,
-      netrst: '',
-      groupList: [
-        {
-          id: 1,
-          name: '点击改变',
-          list: [
-            {
-              childid: '1.1',
-              childname: '子项，点我改变'
-            }, {
-              childid: '1.2',
-              childname: '子项，点我改变'
-            }, {
-              childid: '1.3',
-              childname: '子项，点我改变'
-            }
-          ]
-        },
-        {
-          id: 2,
-          name: '点击改变',
-          list: [
-            {
-              childid: '2.1',
-              childname: '子项，点我改变'
-            }, {
-              childid: '2.2',
-              childname: '子项，点我改变'
-            }, {
-              childid: '2.3',
-              childname: '子项，点我改变'
-            }
-          ]
-        },
-        {
-          id: 3,
-          name: '点击改变',
-          list: [
-            {
-              childid: '3.1',
-              childname: '子项，点我改变'
-            }
-          ]
+        // 小程序初始化时触发App里的onLaunch，后面再执行页面Page里的onLoad，但是在onLaunch里请求获取是否有权限，等待返回值的时候Page里的onLoad事件就已经执行了。
+        // [App] onLaunch -> [Page] onLoad -> [App] onLaunch sucess callback
+        if (app.globalData.token) {
+            this.checkUserInfo()
+        } else {
+          app.loginCallback = res => {
+            this.checkUserInfo()
+          }
         }
-      ]
-    }
+        }
+        onReady(e) {
+            console.log(this.userInfo)
+        }
+        components = {
+            navbars: Navbars,
+            sectiontwo: Sectiontwo,
+            chooselist: ChooseList
+        }
+        data = {
+            tabs: ['到底要选啥', '上天的选择', '别人选的啥'],
+            userInfo: null,
+            activeIndex: 1,
+            sliderOffset: 0,
+            sliderLeft: 0,
+            awardsList: [],
+            animationData: {},
+            btnDisabled: '',
+            getAwardsConfig: {},
+            Selectarray: [2,3,4,5,6,7,8,9],
+            awardsConfig: {
+                chance: true,
+                awards: [
 
-    computed = {
-      now () {
-        return +new Date()
-      }
-    }
+                    // { 'index': 0, 'name': '' },
+                ]
+            },
+            title: '', //题目
+            otherList: [{
+                title:'中午吃点啥',
+                list: ['鱼香肉丝','宫保鸡丁'],
+                pick: '鱼香肉丝',
+                username:'',
+                useravator:''
+            },{
+                title:'中午吃点啥2',
+                list: ['鱼香肉丝2','宫保鸡丁2'],
+                pick: '鱼香肉丝',
+                username:'',
+                useravator:''
+            }]
+        }
+        methods = {
+            tabClick(e) {
+                this.sliderOffset = e.currentTarget.offsetLeft;
+                this.activeIndex = e.currentTarget.id;
+            },
+            activeI(i) {
+                this.activeIndex = i
+            },
+            deleteLine(index,e) {
+                this.awardsConfig.awards.splice(index,1)
+                console.log(this.awardsConfig.awards)
+                this.draw()
+            },
+            bindPickerChange(e) {
+                let index = e.detail.value
+                this.awardsConfig.awards = Array(this.Selectarray[index]).fill({name:''})
+                this.draw()
+            },
+            handleTitleInput(e) {
+                this.title = e.detail.value
+            },
+            handleInput(index,e) {
+                this.awardsConfig.awards[index] = {name: e.detail.value}
+                this.draw()
+            },
+            getLottery: function() {
+                if (!this.awardsConfig.awards.length) {
+                    return
+                }
+                var that = this
+                var length = this.awardsConfig.awards.length
+                var awardIndex = Math.random() * length >>> 0;
 
-    methods = {
-      plus () {
-        this.mynum++
-      },
-      toast () {
-        let promise = this.$invoke('toast', 'show', {
-          title: '自定义标题',
-          img: 'https://raw.githubusercontent.com/kiinlam/wetoast/master/images/star.png'
-        })
+                // 获取奖品配置
+                var awardsConfig = this.awardsConfig
+                // if (awardIndex < 2) awardsConfig.chance = false
+                // console.log(awardIndex)
 
-        promise.then((d) => {
-          console.log('toast done')
-        })
-      },
-      tap () {
-        console.log('do noting from ' + this.$name)
-      },
-      communicate () {
-        console.log(this.$name + ' tap1')
+                // 初始化 rotate
+                var animationInit = wx.createAnimation({
+                    duration: 1
+                })
+                this.animationInit = animationInit;
+                animationInit.rotate(0).step()
+                this.setData({
+                    animationData: animationInit.export(),
+                    // btnDisabled: 'disabled'
+                })
+                this.btnDisabled = 'disabled'
 
-        this.$invoke('counter2', 'minus', 45, 6)
-        this.$invoke('counter1', 'plus', 45, 6)
+                // 旋转抽奖
+                setTimeout(function() {
+                    var animationRun = wx.createAnimation({
+                        duration: 4000,
+                        timingFunction: 'ease'
+                    })
+                    that.animationRun = animationRun
+                    animationRun.rotate(360 * 8 - awardIndex * (360 / length)).step()
+                    that.setData({
+                        animationData: animationRun.export()
+                    })
+                }, 100)
 
-        this.$broadcast('index-broadcast', 1, 3, 4)
-      },
-      request () {
-        let self = this
-        let i = 10
-        let map = ['MA==', 'MQo=', 'Mg==', 'Mw==', 'NA==', 'NQ==', 'Ng==', 'Nw==', 'OA==', 'OQ==']
-        while (i--) {
-          wepy.request({
-            url: 'https://www.madcoder.cn/tests/sleep.php?time=1&t=css&c=' + map[i] + '&i=' + i,
-            success: function (d) {
-                // 在异步函数中更新数据的时候，必须手动调用$apply方法，才会触发脏数据检查流程的运行。
-              self.netrst += d.data + '.'
-              self.$apply()
+                // 中奖提示
+                setTimeout(function() {
+                    wx.showModal({
+                        title: '别犹豫啦，这是上天的安排~',
+                        content:  `就第${awardIndex+1}项${awardsConfig.awards[awardIndex].name}吧`,
+                        showCancel: false
+                    })
+                    // if (awardsConfig.chance) {
+                        that.awardsConfig.chance = true
+                        that.btnDisabled = ''
+                        that.$apply()
+                        // that.setData({
+                        //     btnDisabled: ''
+                        // })
+                    // }
+                }, 4100);
+            },
+        }
+        computed() {
+            // btnDisabled: {
+            //     return this.awardsConfig.chance ? 'a' : 'b'
+            // }
+        }
+        draw() {
+            var that = this;
+            var awardsConfig = that.awardsConfig.awards,
+            len = awardsConfig.length,
+            rotateDeg = 360 / len / 2 + 90,
+            html = [],
+            turnNum = 1 / len // 文字旋转 turn 值
+            that.btnDisabled = that.awardsConfig.chance ? '' : 'disabled'
+            var ctx = wx.createContext()
+            for (var i = 0; i < len; i++) {
+                // 保存当前状态
+                ctx.save();
+                // 开始一条新路径
+                ctx.beginPath();
+                // 位移到圆心，下面需要围绕圆心旋转
+                ctx.translate(150, 150);
+                // 从(0, 0)坐标开始定义一条新的子路径
+                ctx.moveTo(0, 0);
+                // 旋转弧度,需将角度转换为弧度,使用 degrees * Math.PI/180 公式进行计算。
+                ctx.rotate((360 / len * i - rotateDeg) * Math.PI / 180);
+                // 绘制圆弧
+                ctx.arc(0, 0, 150, 0, 2 * Math.PI / len, false);
+                // 颜色间隔
+                if (i % 2 == 0) {
+                    ctx.setFillStyle('#ffb820');
+                } else {
+                    ctx.setFillStyle('#ffcb3f');
+                }
+                // 填充扇形
+                ctx.fill();
+                // 绘制边框
+                ctx.setLineWidth(0.5);
+                ctx.setStrokeStyle('#e4370e');
+                ctx.stroke();
+                // 恢复前一个状态
+                ctx.restore();
+                // 奖项列表
+                html.push({ turn: i * turnNum + 'turn', award: `${i+1}  ${awardsConfig[i].name}` });
+            }
+            that.awardsList = html
+            wx.drawCanvas({
+                canvasId: 'lotteryCanvas',
+                actions: ctx.getActions()
+            })
+        }
+        checkUserInfo(e) {
+          wx.getUserInfo({
+            // 带上登录信息
+            withCredentials: true,
+            success: res => {
+              // 成功获取用户信息
+            this.sendEncryptedData(res.encryptedData, res.iv)
+            },
+            fail: res => {
+              console.log(res)
+                // 显示登录按钮，引导登录
+                this.isLogin = false
+                this.$apply()
             }
           })
         }
-      },
-      counterEmit (...args) {
-        let $event = args[args.length - 1]
-        console.log(`${this.$name} receive ${$event.name} from ${$event.source.$name}   methods`)
-      }
-    }
-
-    events = {
-      'index-emit': (...args) => {
-        let $event = args[args.length - 1]
-        console.log(`${this.$name} receive ${$event.name} from ${$event.source.$name}   events`)
-      }
-    }
-
-    onLoad() {
-      let self = this
-      // this.$parent来访问App实例
-      this.$parent.getUserInfo(function (userInfo) {
-        if (userInfo) {
-          self.userInfo = userInfo
+        // 获取用户加密信息  (包含openid 等敏感等信息// )
+        sendEncryptedData (encryptedData, iv) {
+          let self = this
+          request({
+            url: '/api/wx/user',
+            data: {
+              encryptedData: encryptedData,
+              iv: iv
+            },
+            success: function(res) {
+                let app = this.$parent
+              if (res.data.code !== 200) {
+                // 不成功删掉token让其重新进入
+                wx.removeStorageSync('token')
+                wx.showModal({
+                  title: '提示',
+                  content: 'session过期，请退出小程序重新进入',
+                  showCancel: false
+                })
+              }
+              app.globalData.userInfo = res.data.data
+              this.userInfo = res.data.data
+              this.isLogin = true
+              this.$apply()
+            }
+          })
         }
-        self.normalTitle = '标题已被修改'
+        events = {
 
-        self.setTimeoutTitle = '标题三秒后会被修改'
-        setTimeout(() => {
-          self.setTimeoutTitle = '到三秒了'
-          self.$apply()
-        }, 3000)
-
-        self.$apply()
-      })
+        }
     }
-  }
+
 </script>
+
+<style lang="less">
+    .weui-tab{
+
+    }
+page {
+    background: #fff;
+}
+
+.header{
+    padding: 1rem 0;
+    text-align: center;
+}
+.header-title{
+    display: block;
+    padding: .4rem 0;
+    font-size: 2rem;
+}
+.header-subtitle{
+    color: #999;
+}
+
+
+.select-cont {
+    margin: 30px;
+}
+/* 转盘 */
+.canvas-container ul,
+.canvas-container li{
+  margin: 0 ;
+  padding: 0;
+  list-style: none;
+}
+
+.canvas-container{
+  margin: 0 auto;
+  margin-top: 50px;
+  margin-bottom: 50px;
+  position: relative;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  border: 2px solid #E44025;
+  box-shadow: 0 2px 3px #333,
+              0 0 2px #000;
+}
+.canvas-content{
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  display: block;
+  width: inherit;
+  height: inherit;
+  border-radius: inherit;
+  background-clip: padding-box;
+  background-color: #ffcb3f;
+}
+.canvas-element{
+  width: inherit;
+  height: inherit;
+  border-radius: 50%;
+}
+.canvas-list{
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: inherit;
+  height: inherit;
+  z-index: 2;
+}
+.canvas-item{
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  color: #e4370e;
+  font-weight: bold;
+  text-shadow: 0 1px 1px rgba(255,255,255,.6);
+}
+.canvas-item-text{
+  position: relative;
+  display: block;
+  padding-top: 20px;
+  /* width: 50px; */
+  margin: 0 auto;
+  text-align: center;
+  -webkit-transform-origin: 50% 150px;
+  transform-origin: 50% 150px;
+}
+
+.canvas-btn{
+  position: absolute;
+  left: 110px;
+  top: 110px;
+  z-index: 3;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  color: #F4E9CC;
+  background-color: #E44025;
+  line-height: 80px;
+  text-align: center;
+  font-size: 20px;
+  text-shadow: 0 -1px 1px rgba(0,0,0,.6);
+  box-shadow: 0 3px 5px rgba(0,0,0,.6);
+  text-decoration: none;
+}
+.canvas-btn::after{
+  position: absolute;
+  display: block;
+  content: ' ';
+  left: 10px;
+  top: -46px;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  border-width: 30px;
+  border-style: solid;
+  border-color: transparent;
+  border-bottom-color: #E44025;
+}
+.canvas-btn.disabled{
+    pointer-events: none;
+    background: #B07A7B;
+    color: #ccc;
+}
+.canvas-btn.disabled::after{
+  border-bottom-color: #B07A7B;
+}
+
+
+.gb-run{
+    -webkit-transition: all 6s ease;
+    transition: all 6s ease;
+}
+
+
+/* 查看中奖 */
+.main-container{
+    margin: 1rem 2rem;
+}
+
+.main-container-rule{
+    padding: 1rem 0;
+}
+.main-rule-title{
+    display: block;
+    padding: 4px 0;
+    font-size: 16px;
+    font-weight: bold;
+}
+.main-rule-item{
+    display: block;
+    padding: 2px 0;
+}
+</style>

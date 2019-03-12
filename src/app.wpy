@@ -48,7 +48,7 @@ export default class extends wepy.app {
       'pages/index',
       'pages/demo',
       'pages/mine',
-      'pages/BifurcationTerminal'
+      'pages/demo2'
     ],
     window: {
       backgroundTextStyle: 'light',
@@ -59,7 +59,7 @@ export default class extends wepy.app {
     tabBar: {
       "selectedColor": "rgb(24, 141, 0)",
     list: [{
-      "pagePath": "pages/BifurcationTerminal",
+      "pagePath": "pages/index",
       "text": "首页",
         "iconPath": "res/room.png",
         "selectedIconPath": "res/room1.png"
