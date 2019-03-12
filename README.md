@@ -7,7 +7,7 @@
 
 你可能需要这款分歧终端机！！
 
-### 本质就是一款可配置的转盘抽奖游戏
+### 本质就是一款用户可以自己配置的转盘抽奖游戏
 
-<img src="https://github.com/501981732/BifurcationTerminal/blob/master/screenshots/a1.gif?raw=true" />
+<img src="https://github.com/501981732/BifurcationTerminal/blob/master/screenshots/a.gif?raw=true" />
 
